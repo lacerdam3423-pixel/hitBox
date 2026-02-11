@@ -1,0 +1,290 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ProHitbox"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 300, 0, 200)
+MainFrame.Position = UDim2.new(0, 20, 0, 20)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "🎯 PRO HITBOX"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+Title.Parent = MainFrame
+
+local MinSizeLabel = Instance.new("TextLabel")
+MinSizeLabel.Size = UDim2.new(0.45, 0, 0, 30)
+MinSizeLabel.Position = UDim2.new(0.05, 0, 0, 50)
+MinSizeLabel.BackgroundTransparency = 1
+MinSizeLabel.Text = "Min: 10"
+MinSizeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+MinSizeLabel.TextScaled = true
+MinSizeLabel.Font = Enum.Font.Gotham
+MinSizeLabel.Parent = MainFrame
+
+local MinSizeSlider = Instance.new("Frame")
+MinSizeSlider.Size = UDim2.new(0.45, 0, 0, 8)
+MinSizeSlider.Position = UDim2.new(0.05, 0, 0, 80)
+MinSizeSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+MinSizeSlider.Parent = MainFrame
+
+local MinSliderFill = Instance.new("Frame")
+MinSliderFill.Size = UDim2.new(0.1, 0, 1, 0)
+MinSliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+MinSliderFill.BorderSizePixel = 0
+MinSliderFill.Parent = MinSizeSlider
+
+local MinUICorner = Instance.new("UICorner")
+MinUICorner.CornerRadius = UDim.new(0, 4)
+MinUICorner.Parent = MinSizeSlider
+local MinFillCorner = Instance.new("UICorner")
+MinFillCorner.CornerRadius = UDim.new(0, 4)
+MinFillCorner.Parent = MinSliderFill
+
+local MaxSizeLabel = Instance.new("TextLabel")
+MaxSizeLabel.Size = UDim2.new(0.45, 0, 0, 30)
+MaxSizeLabel.Position = UDim2.new(0.5, 0, 0, 50)
+MaxSizeLabel.BackgroundTransparency = 1
+MaxSizeLabel.Text = "Max: 100"
+MaxSizeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+MaxSizeLabel.TextScaled = true
+MaxSizeLabel.Font = Enum.Font.Gotham
+MaxSizeLabel.Parent = MainFrame
+
+local MaxSizeSlider = Instance.new("Frame")
+MaxSizeSlider.Size = UDim2.new(0.45, 0, 0, 8)
+MaxSizeSlider.Position = UDim2.new(0.5, 0, 0, 80)
+MaxSizeSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+MaxSizeSlider.Parent = MainFrame
+
+local MaxSliderFill = Instance.new("Frame")
+MaxSliderFill.Size = UDim2.new(1, 0, 1, 0)
+MaxSliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+MaxSliderFill.BorderSizePixel = 0
+MaxSliderFill.Parent = MaxSizeSlider
+
+local MaxUICorner = Instance.new("UICorner")
+MaxUICorner.CornerRadius = UDim.new(0, 4)
+MaxUICorner.Parent = MaxSizeSlider
+local MaxFillCorner = Instance.new("UICorner")
+MaxFillCorner.CornerRadius = UDim.new(0, 4)
+MaxFillCorner.Parent = MaxSliderFill
+
+local TransparencyLabel = Instance.new("TextLabel")
+TransparencyLabel.Size = UDim2.new(1, 0, 0, 30)
+TransparencyLabel.Position = UDim2.new(0, 0, 0, 100)
+TransparencyLabel.BackgroundTransparency = 1
+TransparencyLabel.Text = "Transparência: 50%"
+TransparencyLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+TransparencyLabel.TextScaled = true
+TransparencyLabel.Font = Enum.Font.Gotham
+TransparencyLabel.Parent = MainFrame
+
+local TransSlider = Instance.new("Frame")
+TransSlider.Size = UDim2.new(1, -20, 0, 8)
+TransSlider.Position = UDim2.new(0, 10, 0, 130)
+TransSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+TransSlider.Parent = MainFrame
+
+local TransFill = Instance.new("Frame")
+TransFill.Size = UDim2.new(0.5, 0, 1, 0)
+TransFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+TransFill.BorderSizePixel = 0
+TransFill.Parent = TransSlider
+
+local TransUICorner = Instance.new("UICorner")
+TransUICorner.CornerRadius = UDim.new(0, 4)
+TransUICorner.Parent = TransSlider
+local TransFillCorner = Instance.new("UICorner")
+TransFillCorner.CornerRadius = UDim.new(0, 4)
+TransFillCorner.Parent = TransFill
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0.45, -5, 0, 35)
+ToggleButton.Position = UDim2.new(0.05, 0, 0, 155)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+ToggleButton.Text = "OFF"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextScaled = true
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.Parent = MainFrame
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 8)
+ToggleCorner.Parent = ToggleButton
+
+local ColorButton = Instance.new("TextButton")
+ColorButton.Size = UDim2.new(0.45, 0, 0, 35)
+ColorButton.Position = UDim2.new(0.525, 0, 0, 155)
+ColorButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+ColorButton.Text = "Cor ➤"
+ColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ColorButton.TextScaled = true
+ColorButton.Font = Enum.Font.GothamBold
+ColorButton.Parent = MainFrame
+
+local ColorCorner = Instance.new("UICorner")
+ColorCorner.CornerRadius = UDim.new(0, 8)
+ColorCorner.Parent = ColorButton
+
+local minSize = 10
+local maxSize = 100
+local transparency = 0.5
+local enabled = false
+local currentColor = Color3.fromRGB(255, 0, 0)
+
+local hitboxes = {}
+
+local function createHitbox(part)
+    local hitbox = part:FindFirstChild("ProHitbox")
+    if hitbox then hitbox:Destroy() end
+    
+    hitbox = Instance.new("Part")
+    hitbox.Name = "ProHitbox"
+    hitbox.Size = Vector3.new(math.random(minSize, maxSize), math.random(minSize, maxSize), math.random(minSize, maxSize))
+    hitbox.Transparency = transparency
+    hitbox.Color = currentColor
+    hitbox.Material = Enum.Material.ForceField
+    hitbox.CanCollide = false
+    hitbox.Anchored = false
+    hitbox.Parent = part
+    
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = part
+    weld.Part1 = hitbox
+    weld.Parent = hitbox
+    
+    hitboxes[part] = hitbox
+end
+
+local function updateHitboxes()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.Humanoid.Health > 0 then
+            local root = player.Character.HumanoidRootPart
+            if enabled then
+                createHitbox(root)
+            else
+                if hitboxes[root] then
+                    hitboxes[root]:Destroy()
+                    hitboxes[root] = nil
+                end
+            end
+        end
+    end
+end
+
+local function dragGUI()
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+    
+    MainFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+        end
+    end)
+    
+    MainFrame.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+end
+
+local function updateMinSlider(input)
+    local percent = math.clamp((input.Position.X - MinSizeSlider.AbsolutePosition.X) / MinSizeSlider.AbsoluteSize.X, 0, 1)
+    MinSliderFill.Size = UDim2.new(percent, 0, 1, 0)
+    minSize = math.floor(10 + (percent * 90))
+    MinSizeLabel.Text = "Min: " .. minSize
+end
+
+local function updateMaxSlider(input)
+    local percent = math.clamp((input.Position.X - MaxSizeSlider.AbsolutePosition.X) / MaxSizeSlider.AbsoluteSize.X, 0, 1)
+    MaxSliderFill.Size = UDim2.new(percent, 0, 1, 0)
+    maxSize = math.floor(10 + (percent * 90))
+    MaxSizeLabel.Text = "Max: " .. maxSize
+end
+
+local function updateTransSlider(input)
+    local percent = math.clamp((input.Position.X - TransSlider.AbsolutePosition.X) / TransSlider.AbsoluteSize.X, 0, 1)
+    TransFill.Size = UDim2.new(percent, 0, 1, 0)
+    transparency = percent
+    TransparencyLabel.Text = "Transparência: " .. math.floor(percent * 100) .. "%"
+end
+
+MinSizeSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        MinSizeSlider.Active = true
+        UserInputService.InputChanged:Connect(function(input2)
+            if input2.UserInputType == Enum.UserInputType.MouseMovement then
+                updateMinSlider(input2)
+            end
+        end)
+    end
+end)
+
+MaxSizeSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        MaxSizeSlider.Active = true
+        UserInputService.InputChanged:Connect(function(input2)
+            if input2.UserInputType == Enum.UserInputType.MouseMovement then
+                updateMaxSlider(input2)
+            end
+        end)
+    end
+end)
+
+TransSlider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        TransSlider.Active = true
+        UserInputService.InputChanged:Connect(function(input2)
+            if input2.UserInputType == Enum.UserInputType.MouseMovement then
+                updateTransSlider(input2)
+            end
+        end)
+    end
+end)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    ToggleButton.Text = enabled and "ON" or "OFF"
+    ToggleButton.BackgroundColor3 = enabled and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+    TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0.45, -5, 0, 35)}):Play()
+    updateHitboxes()
+end)
+
+ColorButton.MouseButton1Click:Connect(function()
+    currentColor = Color3.fromHSV(math.random(), 0.8, 1)
+    ColorButton.BackgroundColor3 = currentColor
+end)
+
+RunService.Heartbeat:Connect(updateHitboxes)
+dragGUI()
