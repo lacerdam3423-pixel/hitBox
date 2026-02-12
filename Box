@@ -1,283 +1,247 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local Players=game:GetService("Players")
+local LocalPlayer=Players.LocalPlayer
+local Camera=workspace.CurrentCamera
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ProHitbox"
-ScreenGui.Parent = PlayerGui
-ScreenGui.ResetOnSpawn = false
+local ESP_MASTER=true
+local TEAM_CHECK=false
+local SHOW_NAME=true
+local SHOW_HP=true
+local SHOW_DIST=true
+local HITBOX_ON=true
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 200)
-MainFrame.Position = UDim2.new(0, 20, 0, 20)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-MainFrame.BorderSizePixel = 0
-MainFrame.Parent = ScreenGui
+local COLOR_MODE=Color3.fromRGB(255,0,0)
+local RAINBOW=false
+local hue=0
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 12)
-UICorner.Parent = MainFrame
+local gui=Instance.new("ScreenGui",game.CoreGui)
+gui.Name="GodHitboxESP"
+gui.ResetOnSpawn=false
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "🎯 PRO HITBOX"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextScaled = true
-Title.Font = Enum.Font.GothamBold
-Title.Parent = MainFrame
+local main=Instance.new("Frame",gui)
+main.Size=UDim2.new(0,330,0,390)
+main.Position=UDim2.new(0.35,0,0.2,0)
+main.BackgroundColor3=Color3.fromRGB(18,18,18)
+main.Active=true
+main.Draggable=true
+main.BorderSizePixel=0
+Instance.new("UICorner",main).CornerRadius=UDim.new(0,12)
 
-local MinSizeLabel = Instance.new("TextLabel")
-MinSizeLabel.Size = UDim2.new(0.45, 0, 0, 30)
-MinSizeLabel.Position = UDim2.new(0.05, 0, 0, 50)
-MinSizeLabel.BackgroundTransparency = 1
-MinSizeLabel.Text = "Min: 10"
-MinSizeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-MinSizeLabel.TextScaled = true
-MinSizeLabel.Font = Enum.Font.Gotham
-MinSizeLabel.Parent = MainFrame
+local title=Instance.new("TextLabel",main)
+title.Size=UDim2.new(1,0,0,28)
+title.BackgroundTransparency=1
+title.Text="GOD HITBOX ESP"
+title.Font=Enum.Font.GothamBold
+title.TextSize=13
+title.TextColor3=Color3.new(1,1,1)
 
-local MinSizeSlider = Instance.new("Frame")
-MinSizeSlider.Size = UDim2.new(0.45, 0, 0, 8)
-MinSizeSlider.Position = UDim2.new(0.05, 0, 0, 80)
-MinSizeSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-MinSizeSlider.Parent = MainFrame
-
-local MinSliderFill = Instance.new("Frame")
-MinSliderFill.Size = UDim2.new(0.1, 0, 1, 0)
-MinSliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
-MinSliderFill.BorderSizePixel = 0
-MinSliderFill.Parent = MinSizeSlider
-
-local MinUICorner = Instance.new("UICorner")
-MinUICorner.CornerRadius = UDim.new(0, 4)
-MinUICorner.Parent = MinSizeSlider
-local MinFillCorner = Instance.new("UICorner")
-MinFillCorner.CornerRadius = UDim.new(0, 4)
-MinFillCorner.Parent = MinSliderFill
-
-local MaxSizeLabel = Instance.new("TextLabel")
-MaxSizeLabel.Size = UDim2.new(0.45, 0, 0, 30)
-MaxSizeLabel.Position = UDim2.new(0.5, 0, 0, 50)
-MaxSizeLabel.BackgroundTransparency = 1
-MaxSizeLabel.Text = "Max: 100"
-MaxSizeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-MaxSizeLabel.TextScaled = true
-MaxSizeLabel.Font = Enum.Font.Gotham
-MaxSizeLabel.Parent = MainFrame
-
-local MaxSizeSlider = Instance.new("Frame")
-MaxSizeSlider.Size = UDim2.new(0.45, 0, 0, 8)
-MaxSizeSlider.Position = UDim2.new(0.5, 0, 0, 80)
-MaxSizeSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-MaxSizeSlider.Parent = MainFrame
-
-local MaxSliderFill = Instance.new("Frame")
-MaxSliderFill.Size = UDim2.new(1, 0, 1, 0)
-MaxSliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
-MaxSliderFill.BorderSizePixel = 0
-MaxSliderFill.Parent = MaxSizeSlider
-
-local MaxUICorner = Instance.new("UICorner")
-MaxUICorner.CornerRadius = UDim.new(0, 4)
-MaxUICorner.Parent = MaxSizeSlider
-local MaxFillCorner = Instance.new("UICorner")
-MaxFillCorner.CornerRadius = UDim.new(0, 4)
-MaxFillCorner.Parent = MaxSliderFill
-
-local TransparencyLabel = Instance.new("TextLabel")
-TransparencyLabel.Size = UDim2.new(1, 0, 0, 30)
-TransparencyLabel.Position = UDim2.new(0, 0, 0, 100)
-TransparencyLabel.BackgroundTransparency = 1
-TransparencyLabel.Text = "Transparência: 50%"
-TransparencyLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-TransparencyLabel.TextScaled = true
-TransparencyLabel.Font = Enum.Font.Gotham
-TransparencyLabel.Parent = MainFrame
-
-local TransSlider = Instance.new("Frame")
-TransSlider.Size = UDim2.new(1, -20, 0, 8)
-TransSlider.Position = UDim2.new(0, 10, 0, 130)
-TransSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-TransSlider.Parent = MainFrame
-
-local TransFill = Instance.new("Frame")
-TransFill.Size = UDim2.new(0.5, 0, 1, 0)
-TransFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
-TransFill.BorderSizePixel = 0
-TransFill.Parent = TransSlider
-
-local TransUICorner = Instance.new("UICorner")
-TransUICorner.CornerRadius = UDim.new(0, 4)
-TransUICorner.Parent = TransSlider
-local TransFillCorner = Instance.new("UICorner")
-TransFillCorner.CornerRadius = UDim.new(0, 4)
-TransFillCorner.Parent = TransFill
-
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.new(0.45, -5, 0, 35)
-ToggleButton.Position = UDim2.new(0.05, 0, 0, 155)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-ToggleButton.Text = "OFF"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextScaled = true
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Parent = MainFrame
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = ToggleButton
-
-local ColorButton = Instance.new("TextButton")
-ColorButton.Size = UDim2.new(0.45, 0, 0, 35)
-ColorButton.Position = UDim2.new(0.525, 0, 0, 155)
-ColorButton.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
-ColorButton.Text = "Cor ➤"
-ColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ColorButton.TextScaled = true
-ColorButton.Font = Enum.Font.GothamBold
-ColorButton.Parent = MainFrame
-
-local ColorCorner = Instance.new("UICorner")
-ColorCorner.CornerRadius = UDim.new(0, 8)
-ColorCorner.Parent = ColorButton
-
-local minSize = 10
-local maxSize = 100
-local transparency = 0.5
-local enabled = false
-local currentColor = Color3.fromRGB(255, 0, 0)
-
-local hitboxes = {}
-
-local function createHitbox(part)
-    local hitbox = part:FindFirstChild("ProHitbox")
-    if hitbox then hitbox:Destroy() end
-    
-    hitbox = Instance.new("Part")
-    hitbox.Name = "ProHitbox"
-    hitbox.Size = Vector3.new(math.random(minSize, maxSize), math.random(minSize, maxSize), math.random(minSize, maxSize))
-    hitbox.Transparency = transparency
-    hitbox.Color = currentColor
-    hitbox.Material = Enum.Material.ForceField
-    hitbox.CanCollide = false
-    hitbox.Anchored = false
-    hitbox.Parent = part
-    
-    local weld = Instance.new("WeldConstraint")
-    weld.Part0 = part
-    weld.Part1 = hitbox
-    weld.Parent = hitbox
-    
-    hitboxes[part] = hitbox
+local function btn(txt,y)
+	local b=Instance.new("TextButton",main)
+	b.Size=UDim2.new(0.9,0,0,24)
+	b.Position=UDim2.new(0.05,0,0,y)
+	b.Text=txt
+	b.Font=Enum.Font.GothamBold
+	b.TextSize=10
+	b.BackgroundColor3=Color3.fromRGB(35,35,35)
+	b.TextColor3=Color3.new(1,1,1)
+	b.BorderSizePixel=0
+	Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+	return b
 end
 
-local function updateHitboxes()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.Humanoid.Health > 0 then
-            local root = player.Character.HumanoidRootPart
-            if enabled then
-                createHitbox(root)
-            else
-                if hitboxes[root] then
-                    hitboxes[root]:Destroy()
-                    hitboxes[root] = nil
-                end
-            end
-        end
-    end
+local espBtn=btn("ESP: ON",35)
+local teamBtn=btn("TEAM: OFF",62)
+local nameBtn=btn("NOME: ON",89)
+local hpBtn=btn("VIDA: ON",116)
+local distBtn=btn("DIST: ON",143)
+local hitBtn=btn("HITBOX: ON",170)
+local colorTab=btn("CORES ▸",197)
+local minBtn=btn("MINIMIZAR",355)
+
+-- Aba cores
+local colorsFrame=Instance.new("Frame",main)
+colorsFrame.Size=UDim2.new(0.9,0,0,120)
+colorsFrame.Position=UDim2.new(0.05,0,0,225)
+colorsFrame.BackgroundTransparency=1
+colorsFrame.Visible=false
+
+local function cbtn(t,x,y,c)
+	local b=Instance.new("TextButton",colorsFrame)
+	b.Size=UDim2.new(0,80,0,20)
+	b.Position=UDim2.new(0,x,0,y)
+	b.Text=t
+	b.Font=Enum.Font.GothamBold
+	b.TextSize=9
+	b.BackgroundColor3=c
+	b.TextColor3=Color3.new(0,0,0)
+	b.BorderSizePixel=0
+	Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+	return b
 end
 
-local function dragGUI()
-    local dragging = false
-    local dragStart = nil
-    local startPos = nil
-    
-    MainFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-        end
-    end)
-    
-    MainFrame.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local delta = input.Position - dragStart
-            MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-    
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
+local red=cbtn("VERM",0,0,Color3.fromRGB(255,0,0))
+local yellow=cbtn("AMAR",90,0,Color3.fromRGB(255,255,0))
+local green=cbtn("VERD",180,0,Color3.fromRGB(0,255,0))
+local blue=cbtn("AZUL",0,25,Color3.fromRGB(0,120,255))
+local dark=cbtn("AZ ESC",90,25,Color3.fromRGB(0,0,120))
+local black=cbtn("PRETO",180,25,Color3.fromRGB(0,0,0))
+local white=cbtn("BRANCO",0,50,Color3.fromRGB(255,255,255))
+local rain=cbtn("RAIN",90,50,Color3.fromRGB(255,0,255))
+
+-- Botão reabrir
+local reopen=Instance.new("TextButton",gui)
+reopen.Size=UDim2.new(0,45,0,45)
+reopen.Position=UDim2.new(0,10,0.5,0)
+reopen.Text="ESP"
+reopen.Visible=false
+reopen.Font=Enum.Font.GothamBold
+reopen.TextSize=10
+reopen.BackgroundColor3=Color3.fromRGB(20,20,20)
+reopen.TextColor3=Color3.new(1,1,1)
+reopen.BorderSizePixel=0
+reopen.Active=true
+reopen.Draggable=true
+Instance.new("UICorner",reopen).CornerRadius=UDim.new(1,0)
+
+-- Cache
+local ESP_CACHE={}
+
+local function createESP(plr)
+	if ESP_CACHE[plr] then return end
+
+	local outline=Instance.new("BoxHandleAdornment",gui)
+	outline.AlwaysOnTop=true
+	outline.Transparency=0.75
+
+	local hitbox=Instance.new("BoxHandleAdornment",gui)
+	hitbox.AlwaysOnTop=true
+	hitbox.Transparency=0.85
+
+	local bb=Instance.new("BillboardGui",gui)
+	bb.Size=UDim2.new(0,160,0,35)
+	bb.AlwaysOnTop=true
+
+	local txt=Instance.new("TextLabel",bb)
+	txt.Size=UDim2.new(1,0,1,0)
+	txt.BackgroundTransparency=1
+	txt.Font=Enum.Font.GothamBold
+	txt.TextSize=10
+	txt.TextStrokeTransparency=0.5
+
+	ESP_CACHE[plr]={outline,hitbox,bb,txt}
 end
 
-local function updateMinSlider(input)
-    local percent = math.clamp((input.Position.X - MinSizeSlider.AbsolutePosition.X) / MinSizeSlider.AbsoluteSize.X, 0, 1)
-    MinSliderFill.Size = UDim2.new(percent, 0, 1, 0)
-    minSize = math.floor(10 + (percent * 90))
-    MinSizeLabel.Text = "Min: " .. minSize
+-- Aviso pequeno
+local function notify(t)
+	local n=Instance.new("TextLabel",gui)
+	n.Size=UDim2.new(0,200,0,22)
+	n.Position=UDim2.new(0.5,-100,0.1,0)
+	n.BackgroundColor3=Color3.fromRGB(20,20,20)
+	n.TextColor3=Color3.new(1,1,1)
+	n.Text=t
+	n.Font=Enum.Font.GothamBold
+	n.TextSize=10
+	n.BorderSizePixel=0
+	Instance.new("UICorner",n).CornerRadius=UDim.new(0,6)
+	task.delay(2,function() if n then n:Destroy() end end)
 end
 
-local function updateMaxSlider(input)
-    local percent = math.clamp((input.Position.X - MaxSizeSlider.AbsolutePosition.X) / MaxSizeSlider.AbsoluteSize.X, 0, 1)
-    MaxSliderFill.Size = UDim2.new(percent, 0, 1, 0)
-    maxSize = math.floor(10 + (percent * 90))
-    MaxSizeLabel.Text = "Max: " .. maxSize
-end
-
-local function updateTransSlider(input)
-    local percent = math.clamp((input.Position.X - TransSlider.AbsolutePosition.X) / TransSlider.AbsoluteSize.X, 0, 1)
-    TransFill.Size = UDim2.new(percent, 0, 1, 0)
-    transparency = percent
-    TransparencyLabel.Text = "Transparência: " .. math.floor(percent * 100) .. "%"
-end
-
-MinSizeSlider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        MinSizeSlider.Active = true
-        UserInputService.InputChanged:Connect(function(input2)
-            if input2.UserInputType == Enum.UserInputType.MouseMovement then
-                updateMinSlider(input2)
-            end
-        end)
-    end
+Players.PlayerAdded:Connect(function(p)
+	notify("Entrou: "..p.Name)
 end)
 
-MaxSizeSlider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        MaxSizeSlider.Active = true
-        UserInputService.InputChanged:Connect(function(input2)
-            if input2.UserInputType == Enum.UserInputType.MouseMovement then
-                updateMaxSlider(input2)
-            end
-        end)
-    end
+-- LOOP 0.01
+task.spawn(function()
+	while true do
+		task.wait(0.01)
+
+		if RAINBOW then hue=(hue+0.005)%1 end
+		if not ESP_MASTER then continue end
+
+		for _,plr in pairs(Players:GetPlayers()) do
+			if plr~=LocalPlayer and plr.Character 
+			and plr.Character:FindFirstChild("HumanoidRootPart") 
+			and plr.Character:FindFirstChild("Humanoid") then
+
+				createESP(plr)
+
+				local root=plr.Character.HumanoidRootPart
+				local hum=plr.Character.Humanoid
+				local dist=math.floor((Camera.CFrame.Position-root.Position).Magnitude)
+				local hp=math.floor(hum.Health)
+
+				local color
+				if RAINBOW then
+					color=Color3.fromHSV(hue,1,1)
+				elseif TEAM_CHECK and plr.Team then
+					color=plr.TeamColor.Color
+				else
+					color=COLOR_MODE
+				end
+
+				local d=ESP_CACHE[plr]
+				if d then
+					-- outline
+					d[1].Adornee=plr.Character
+					d[1].Size=Vector3.new(4,6,1)
+					d[1].Color3=color
+
+					-- hitbox
+					if HITBOX_ON then
+						d[2].Adornee=plr.Character
+						d[2].Size=Vector3.new(7,9,7)
+						d[2].Color3=color
+					else
+						d[2].Adornee=nil
+					end
+
+					-- texto
+					d[3].Adornee=plr.Character:FindFirstChild("Head")
+					d[3].StudsOffset=Vector3.new(0,2.2,0)
+
+					local t={}
+					if SHOW_NAME then table.insert(t,plr.Name) end
+					if SHOW_HP then table.insert(t,"HP:"..hp) end
+					if SHOW_DIST then table.insert(t,dist.."m") end
+
+					d[4].Text=table.concat(t," | ")
+					d[4].TextColor3=color
+				end
+			end
+		end
+	end
 end)
 
-TransSlider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        TransSlider.Active = true
-        UserInputService.InputChanged:Connect(function(input2)
-            if input2.UserInputType == Enum.UserInputType.MouseMovement then
-                updateTransSlider(input2)
-            end
-        end)
-    end
+-- Toggles
+espBtn.MouseButton1Click:Connect(function() ESP_MASTER=not ESP_MASTER espBtn.Text=ESP_MASTER and "ESP: ON" or "ESP: OFF" end)
+teamBtn.MouseButton1Click:Connect(function() TEAM_CHECK=not TEAM_CHECK teamBtn.Text=TEAM_CHECK and "TEAM: ON" or "TEAM: OFF" end)
+nameBtn.MouseButton1Click:Connect(function() SHOW_NAME=not SHOW_NAME nameBtn.Text=SHOW_NAME and "NOME: ON" or "NOME: OFF" end)
+hpBtn.MouseButton1Click:Connect(function() SHOW_HP=not SHOW_HP hpBtn.Text=SHOW_HP and "VIDA: ON" or "VIDA: OFF" end)
+distBtn.MouseButton1Click:Connect(function() SHOW_DIST=not SHOW_DIST distBtn.Text=SHOW_DIST and "DIST: ON" or "DIST: OFF" end)
+hitBtn.MouseButton1Click:Connect(function() HITBOX_ON=not HITBOX_ON hitBtn.Text=HITBOX_ON and "HITBOX: ON" or "HITBOX: OFF" end)
+
+colorTab.MouseButton1Click:Connect(function()
+	colorsFrame.Visible=not colorsFrame.Visible
+	colorTab.Text=colorsFrame.Visible and "CORES ▾" or "CORES ▸"
 end)
 
-ToggleButton.MouseButton1Click:Connect(function()
-    enabled = not enabled
-    ToggleButton.Text = enabled and "ON" or "OFF"
-    ToggleButton.BackgroundColor3 = enabled and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
-    TweenService:Create(ToggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0.45, -5, 0, 35)}):Play()
+minBtn.MouseButton1Click:Connect(function() main.Visible=false reopen.Visible=true end)
+reopen.MouseButton1Click:Connect(function() main.Visible=true reopen.Visible=false end)
+
+-- cores
+red.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(255,0,0) RAINBOW=false end)
+yellow.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(255,255,0) RAINBOW=false end)
+green.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(0,255,0) RAINBOW=false end)
+blue.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(0,120,255) RAINBOW=false end)
+dark.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(0,0,120) RAINBOW=false end)
+black.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(0,0,0) RAINBOW=false end)
+white.MouseButton1Click:Connect(function() COLOR_MODE=Color3.fromRGB(255,255,255) RAINBOW=false end)
+rain.MouseButton1Click:Connect(function() RAINBOW=true end)
+
+-- persistência
+LocalPlayer.CharacterAdded:Connect(function()
+	task.wait(1)
+	gui.Parent=game.CoreGui
+end)ggleButton, TweenInfo.new(0.2), {Size = UDim2.new(0.45, -5, 0, 35)}):Play()
     updateHitboxes()
 end)
 
